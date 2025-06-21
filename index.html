@@ -50,17 +50,30 @@
 
 <script>
 const dictionary = [
-  "apple", "banana", "carrot", "delta", "echo", "forest", "giant", "hammer",
-  "island", "jungle", "kite", "lemon", "mountain", "night", "ocean", "pepper",
-  "quartz", "river", "stone", "tree", "umbrella", "valley", "whistle", "xenon",
-  "yarn", "zebra", "cloud", "dragon", "energy", "flame", "gravity", "honey",
-  "ink", "jewel", "kangaroo", "light", "moon", "nebula", "orbit", "planet",
-  "quest", "rose", "sun", "train", "unicorn", "violet", "water", "xylophone",
-  "yeti", "zeppelin"
+  "alpha","anchor","angle","antler","apple","armor","arrow","atom","aurora","avocado","badge","bagel","balcony","banana",
+  "barrel","basil","battery","beacon","beagle","beetle","berry","bicycle","biscuit","blizzard","boulder","branch","breeze",
+  "bubble","buffalo","button","cactus","camera","candle","canvas","carbon","castle","cave","celery","chalk","cheddar","cheetah",
+  "cherry","chimney","circle","cloud","cobra","coconut","comet","cookie","coral","crayon","cricket","crystal","cupcake",
+  "daisy","dancer","dart","decibel","desert","diamond","dingo","dolphin","donut","dragon","echo","eclipse","eel","ember","engine",
+  "falcon","feather","fiddle","fig","flame","flannel","flavor","flicker","flower","fog","forest","fork","fox","fudge",
+  "galaxy","garlic","gazelle","gecko","ghost","giraffe","glacier","goblin","grape","gravity","guitar","halo","hamburger","hammer",
+  "hamster","hazel","helmet","hippo","honey","horizon","horn","hurricane","iceberg","iguana","ink","iron","island","ivy","jacket",
+  "jade","jaguar","jelly","jigsaw","journal","jungle","kangaroo","karma","kettle","kiwi","kite","kitten","ladder","lantern",
+  "lavender","lemon","leopard","lettuce","light","lilac","lily","lizard","lobster","lollipop","lotus","mango","maple","marble",
+  "meadow","melon","meteor","microbe","mint","mirror","moose","mountain","muffin","mushroom","narwhal","nebula","nectar","needle",
+  "neon","nugget","nutmeg","oak","oasis","oat","ocean","octopus","olive","omega","onion","opal","orbit","orchid","otter",
+  "owl","oxygen","panda","papaya","parrot","peach","peanut","pear","pelican","pepper","peptide","petal","pickle","pigeon","pineapple",
+  "plasma","platypus","plum","polar","pomegranate","popcorn","potato","pretzel","prism","pudding","puppy","puzzle","quartz","quokka",
+  "rabbit","radar","radish","rainbow","raspberry","reef","rhubarb","riddle","ring","river","robot","rocket","rose","rubber",
+  "saber","saddle","saffron","salad","salmon","sapphire","saturn","sausage","scarf","scorpion","seagull","shadow","shark",
+  "shell","skate","skunk","slime","sloth","smoke","snail","snake","snow","soap","socket","space","spark","specter","spice",
+  "squid","squirrel","star","steam","stone","storm","sugar","sunset","swirl","sword","syrup","taco","tangerine","tarot","teacup",
+  "teal","temple","thorn","tiger","toast","toffee","tomato","topaz","torch","tornado","towel","tree","tulip","tuna","turkey",
+  "turnip","turtle","twig","unicorn","vacuum","vanilla","velvet","vine","violet","volcano","waffle","walnut","wasabi","wave",
+  "whale","whisker","willow","wind","wing","wizard","wolf","worm","xenon","xylophone","yacht","yam","yarn","yellow","yeti","yogurt","zebra","zucchini"
 ];
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
-
-let baseImage;
+let baseImage = null;
 
 function loadImage() {
   const input = document.getElementById('baseImageInput');
