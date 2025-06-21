@@ -40,6 +40,7 @@
 <div class="container">
   <label><input type="checkbox" id="useHuman"> Human Readable (dictionary words)</label>
   <label><input type="checkbox" id="useSecure"> Secure (random characters)</label>
+  <label><input type="checkbox" id="leetify"> 1337ify it</label>
 
   <label>Password Length: <span id="lengthDisplay">8</span></label>
   <input type="range" id="passLength" min="2" max="20" value="8" oninput="document.getElementById('lengthDisplay').textContent=this.value">
@@ -152,6 +153,7 @@ function decodeImage(event) {
 function generatePassword() {
   const useHuman = document.getElementById("useHuman").checked;
   const useSecure = document.getElementById("useSecure").checked;
+  const useLeet = document.getElementById("leetify").checked;
   const length = parseInt(document.getElementById("passLength").value);
   let result = "";
 
@@ -179,7 +181,26 @@ function generatePassword() {
     result = "⚠️ Select at least one option";
   }
 
+  if (useLeet) {
+    result = leetify(result);
+  }
+
   document.getElementById("generatedPassword").textContent = result;
+}
+
+function leetify(text) {
+  const map = {
+    a: '4', A: '4',
+    e: '3', E: '3',
+    i: '1', I: '1',
+    o: '0', O: '0',
+    s: '5', S: '5',
+    t: '7', T: '7',
+    l: '1', L: '1',
+    b: '8', B: '8',
+    g: '9', G: '9'
+  };
+  return text.split('').map(c => map[c] || c).join('');
 }
 </script>
 
