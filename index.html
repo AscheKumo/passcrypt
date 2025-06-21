@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Stego Password + Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { background: #111; color: #f0f0f0; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 40px; }
+    h1, h2 { color: #72ffbd; }
+    label { color: #ffcc00; font-weight: bold; display: block; margin-top: 20px; }
+    .result { background: #1e1e1e; padding: 16px; border-radius: 10px; margin: 20px auto; max-width: 600px; color: #7fffd4; word-break: break-word; }
+    button { background-color: #ffcc00; color: #000; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+    button:hover { background-color: #e6b800; }
+    canvas { display: none; }
+    .container { max-width: 700px; margin: auto; text-align: left; }
+  </style>
+</head>
+<body>
+
+<h1>🔐 Stego Password Tool</h1>
+
+<label>Select a Base Image:</label>
+<input type="file" accept="image/*" id="baseImageInput" onchange="loadImage()">
+
+<label>Password to Hide:</label>
+<input type="text" id="passwordInput" placeholder="Enter password to hide">
+
+<button onclick="encodePassword()">Encode and Download</button>
+<canvas id="canvas"></canvas>
+
+<hr>
+
+<h2>🔓 Decode from Image</h2>
+<input type="file" accept="image/*" onchange="decodeImage(event)">
+<div class="result" id="decodedResult"></div>
+
+<hr>
+
+<h2>🎲 Password Generator</h2>
+<div class="container">
+  <label><input type="checkbox" id="useHuman"> Human Readable (dictionary words)</label>
+  <label><input type="checkbox" id="useSecure"> Secure (random characters)</label>
+
+  <label>Password Length: <span id="lengthDisplay">4</span></label>
+  <input type="range" id="passLength" min="2" max="10" value="4" oninput="document.getElementById('lengthDisplay').textContent=this.value">
+
+  <button onclick="generatePassword()">Generate Password</button>
+  <div class="result" id="generatedPassword"></div>
+</div>
+
+<script>
+const dictionary = [
+  "apple", "banana", "carrot", "delta", "echo", "forest", "giant", "hammer",
+  "island", "jungle", "kite", "lemon", "mountain", "night", "ocean", "pepper",
+  "quartz", "river", "stone", "tree", "umbrella", "valley", "whistle", "xenon",
+  "yarn", "zebra", "cloud", "dragon", "energy", "flame", "gravity", "honey",
+  "ink", "jewel", "kangaroo", "light", "moon", "nebula", "orbit", "planet",
+  "quest", "rose", "sun", "train", "unicorn", "violet", "water", "xylophone",
+  "yeti", "zeppelin"
+];
+const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+let baseImage;
+
+function loadImage() {
+  const input = document.getElementById('baseImageInput');
+  const reader = new FileReader();
+  reader.onload = e => {
+    baseImage = new Image();
+    baseImage.onload = () => {
+      const canvas = document.getElementById('canvas');
+      canvas.width = baseImage.width;
+      canvas.height = baseImage.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(baseImage, 0, 0);
+    };
+    baseImage.src = e.target.result;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function encodePassword() {
+  const password = document.getElementById('passwordInput').value;
+  if (!baseImage) return alert("Upload an image first.");
+  if (!password) return alert("Enter a password to encode.");
+
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imgData.data;
+
+  const binary = password.split('').map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join('') + '00000000';
+  let bi = 0;
+  for (let i = 0; i < data.length && bi < binary.length; i += 4) {
+    data[i] = (data[i] & ~1) | parseInt(binary[bi]);
+    bi++;
+  }
+
+  ctx.putImageData(imgData, 0, 0);
+  const a = document.createElement("a");
+  a.href = canvas.toDataURL();
+  a.download = "stego-image.png";
+  a.click();
+}
+
+function decodeImage(event) {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+      let binary = '';
+      for (let i = 0; i < data.length; i += 4) {
+        binary += (data[i] & 1).toString();
+      }
+
+      let output = '';
+      for (let i = 0; i < binary.length; i += 8) {
+        const byte = binary.slice(i, i + 8);
+        const code = parseInt(byte, 2);
+        if (code === 0 || isNaN(code)) break;
+        output += String.fromCharCode(code);
+      }
+
+      document.getElementById('decodedResult').textContent = output;
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function generatePassword() {
+  const useHuman = document.getElementById("useHuman").checked;
+  const useSecure = document.getElementById("useSecure").checked;
+  const length = parseInt(document.getElementById("passLength").value);
+  let result = "";
+
+  if (useHuman && useSecure) {
+    const words = Array.from({ length: Math.min(4, length) }, () =>
+      dictionary[Math.floor(Math.random() * dictionary.length)]
+    );
+    const secure = Array.from({ length: 8 }, () =>
+      charset[Math.floor(Math.random() * charset.length)]
+    ).join('');
+    result = [...words, secure].join('-');
+  } else if (useHuman) {
+    const words = Array.from({ length }, () =>
+      dictionary[Math.floor(Math.random() * dictionary.length)]
+    );
+    result = words.join('-');
+  } else if (useSecure) {
+    result = Array.from({ length }, () =>
+      charset[Math.floor(Math.random() * charset.length)]
+    ).join('');
+  } else {
+    result = "⚠️ Select at least one option";
+  }
+
+  document.getElementById("generatedPassword").textContent = result;
+}
+</script>
+
+</body>
+</html>
